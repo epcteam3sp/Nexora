@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Save Functionality</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #1a1a1a; color: white; }
+        .btn { padding: 10px 20px; margin: 10px; background: #6366f1; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .btn:hover { background: #4f46e5; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #545b62; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); }
+        .modal:target { display: flex; align-items: center; justify-content: center; }
+        .modal .dialog { background: #2a2a2a; border-radius: 10px; padding: 20px; max-width: 500px; width: 90%; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); }
+        .form-row { margin-bottom: 15px; }
+        .form-row label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-row input, .form-row select { width: 100%; padding: 8px; border: 1px solid #555; border-radius: 4px; background: #333; color: white; }
+        .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #555; text-align: left; }
+        th { background: #333; }
+    </style>
+</head>
+<body>
+    <h1>Test Save Functionality</h1>
+    
+    <button class="btn" onclick="editStudent('S123')">Edit Student S123</button>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Class</th>
+                <th>Section</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentTable">
+            <tr>
+                <td>S123</td>
+                <td>Aisha Khan</td>
+                <td>Grade 8</td>
+                <td>A</td>
+                <td>Active</td>
+                <td><button class="btn" onclick="editStudent('S123')">Edit</button></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div id="modal-edit-student" class="modal">
+        <div class="dialog">
+            <h5>Edit Student</h5>
+            <div class="form-row">
+                <label>Student ID</label>
+                <input type="text" id="editStudentId" readonly value="S123">
+            </div>
+            <div class="form-row">
+                <label>Name</label>
+                <input type="text" id="editStudentName" placeholder="Full name" value="Aisha Khan">
+            </div>
+            <div class="form-row">
+                <label>Class</label>
+                <select id="editStudentClass">
+                    <option value="">Select Class</option>
+                    <option value="Grade 8" selected>Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Section</label>
+                <select id="editStudentSection">
+                    <option value="">Select Section</option>
+                    <option value="A" selected>A</option>
+                    <option value="B">B</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label>Status</label>
+                <select id="editStudentStatus">
+                    <option value="Active" selected>Active</option>
+                    <option value="Transferred">Transferred</option>
+                    <option value="Suspended">Suspended</option>
+                </select>
+            </div>
+            <div class="actions">
+                <button class="btn btn-secondary" onclick="closeModal('modal-edit-student')">Cancel</button>
+                <button class="btn" onclick="saveStudentEdit()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple storage simulation
+        const storage = {
+            get(key, fallback) {
+                const data = localStorage.getItem(key);
+                return data ? JSON.parse(data) : fallback;
+            },
+            set(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            }
+        };
+        
+        // Initialize test data
+        if(!storage.get('students')) {
+            storage.set('students', [
+                { id: 'S123', name: 'Aisha Khan', className: 'Grade 8', section: 'A', status: 'Active' }
+            ]);
+        }
+        
+        function editStudent(studentId) {
+            console.log('Edit student called:', studentId);
+            alert('Edit function called for: ' + studentId);
+            
+            const students = storage.get('students', []);
+            const student = students.find(s => s.id === studentId);
+            
+            if(student) {
+                document.getElementById('editStudentId').value = student.id;
+                document.getElementById('editStudentName').value = student.name;
+                document.getElementById('editStudentClass').value = student.className;
+                document.getElementById('editStudentSection').value = student.section;
+                document.getElementById('editStudentStatus').value = student.status;
+                
+                location.hash = 'modal-edit-student';
+            }
+        }
+        
+        function saveStudentEdit() {
+            console.log('Save function called');
+            alert('Save function called!');
+            
+            const studentId = document.getElementById('editStudentId').value;
+            const name = document.getElementById('editStudentName').value.trim();
+            const className = document.getElementById('editStudentClass').value;
+            const section = document.getElementById('editStudentSection').value;
+            const status = document.getElementById('editStudentStatus').value;
+            
+            console.log('Form data:', { studentId, name, className, section, status });
+            
+            if(!name || !className || !section) {
+                alert('Please fill in all required fields');
+                return;
+            }
+            
+            const students = storage.get('students', []);
+            const studentIndex = students.findIndex(s => s.id === studentId);
+            
+            if(studentIndex !== -1) {
+                students[studentIndex] = { id: studentId, name, className, section, status };
+                storage.set('students', students);
+                
+                // Update table
+                updateTable();
+                closeModal('modal-edit-student');
+                alert('Student updated successfully!');
+            }
+        }
+        
+        function updateTable() {
+            const students = storage.get('students', []);
+            const tbody = document.getElementById('studentTable');
+            
+            tbody.innerHTML = students.map(student => `
+                <tr>
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.className}</td>
+                    <td>${student.section}</td>
+                    <td>${student.status}</td>
+                    <td><button class="btn" onclick="editStudent('${student.id}')">Edit</button></td>
+                </tr>
+            `).join('');
+        }
+        
+        function closeModal(modalId) {
+            location.hash = '';
+        }
+        
+        // Initialize table
+        updateTable();
+    </script>
+</body>
+</html>

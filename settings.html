@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Settings - School Management</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body data-page="settings">
+        <div class="banner container">
+            <div class="navbar">
+                <img src="logo.jpg" class="logo" alt="School Logo">
+                <ul class="nav">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="attendance.html">Attendance</a></li>
+                    <li><a href="students.html">Students</a></li>
+                    <li><a href="classes.html">Classes</a></li>
+                    <li><a href="assignments.html">Assignments</a></li>
+                    <li><a href="exams.html">Exams</a></li>
+                    <li><a href="reports.html">Reports</a></li>
+                    <li><a class="active" href="settings.html">Settings</a></li>
+                </ul>
+                <button id="toggleTheme" class="btn btn-sm btn-outline-light ms-auto">Dark</button>
+            </div>
+
+            <div class="content mt-3">
+                <h1>Settings</h1>
+                
+                <div class="row g-4 settings-layout">
+                    <aside class="col-12 col-lg-3 settings-sidebar">
+                        <div class="panel">
+                            <div class="search mb-2">
+                                <span class="emoji">🔎</span>
+                                <input type="text" id="settingsSearch" placeholder="Search settings">
+                            </div>
+                            <nav class="settings-nav">
+                                <a href="#profile">Profile</a>
+                                <a href="#notifications">Notifications</a>
+                                <a href="#privacy">Data & Privacy</a>
+                                <a href="#about">About</a>
+                            </nav>
+                        </div>
+                    </aside>
+
+                    <div class="col-12 col-lg-9 settings-content">
+                        <div class="settings-section">
+                            <h3 id="profile">Profile</h3>
+                            <div class="panel">
+                                <div class="form-row">
+                                    <label>Full Name</label>
+                                    <input id="setName" type="text" placeholder="Full name">
+                                </div>
+                                <div class="form-row">
+                                    <label>Email</label>
+                                    <input id="setEmail" type="email" placeholder="email@school.edu" readonly>
+                                </div>
+                                <div class="form-row">
+                                    <label>Phone</label>
+                                    <input id="setPhone" type="tel" placeholder="+1 (555) 123-4567">
+                                </div>
+                                <div class="form-row">
+                                    <label>Role</label>
+                                    <select id="setRole">
+                                        <option value="admin">Administrator</option>
+                                        <option value="teacher">Teacher</option>
+                                        <option value="section_head">Section Head</option>
+                                        <option value="student">Student</option>
+                                        <option value="parent">Parent</option>
+                                    </select>
+                                </div>
+                                <div class="actions">
+                                    <button id="btnSaveProfile" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+
+                        <div class="settings-section">
+                            <h3 id="notifications">Notifications</h3>
+                            <div class="panel">
+                                <div class="form-row">
+                                    <label>Email Notifications</label>
+                                    <label class="toggle">
+                                        <input id="notifyEmail" type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="form-row">
+                                    <label>Attendance Alerts</label>
+                                    <label class="toggle">
+                                        <input id="notifyAttendance" type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="form-row">
+                                    <label>Grade Updates</label>
+                                    <label class="toggle">
+                                        <input id="notifyGrades" type="checkbox">
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="form-row">
+                                    <label>Assignment Reminders</label>
+                                    <label class="toggle">
+                                        <input id="notifyAssignments" type="checkbox" checked>
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="settings-section">
+                            <h3 id="privacy">Data & Privacy</h3>
+                            <div class="panel">
+                                <div class="form-row">
+                                    <label>Export Data</label>
+                                    <button class="btn btn-outline-primary btn-sm" onclick="exportData()">Download</button>
+                                </div>
+                                <div class="form-row">
+                                    <label>Delete Account</label>
+                                    <button class="btn btn-outline-danger btn-sm" onclick="deleteAccount()">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="settings-section">
+                            <h3 id="about">About</h3>
+                            <div class="panel">
+                                <p><strong>Version:</strong> 1.0.0</p>
+                                <p><strong>Last Updated:</strong> September 2024</p>
+                                <p><strong>Support:</strong> <a href="mailto:support@school.edu">support@school.edu</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+        <script src="scripts.js"></script>
+        <script>
+            // Sidebar active link on scroll
+            (function(){
+                const links = Array.from(document.querySelectorAll('.settings-nav a'));
+                const sections = links.map(function(l){ return document.querySelector(l.getAttribute('href')); }).filter(Boolean);
+                const onScroll = function(){
+                    const y = window.scrollY + 120;
+                    let activeIdx = 0;
+                    sections.forEach(function(sec, idx){ if(sec.offsetTop <= y) activeIdx = idx; });
+                    links.forEach(function(l){ l.classList.remove('active'); });
+                    if(links[activeIdx]) links[activeIdx].classList.add('active');
+                };
+                document.addEventListener('scroll', onScroll, { passive: true });
+                onScroll();
+
+                // Simple search filter for sections
+                const input = document.getElementById('settingsSearch');
+                if(input){
+                    input.addEventListener('input', function(e){
+                        const term = e.target.value.toLowerCase().trim();
+                        document.querySelectorAll('.settings-section').forEach(function(sec){
+                            const text = sec.textContent.toLowerCase();
+                            sec.style.display = term === '' || text.includes(term) ? '' : 'none';
+                        });
+                    });
+                }
+            })();
+
+            // Profile management
+            (function(){
+                // Get current user data
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+                // Populate profile form with current user data
+                if(currentUser.name){
+                    document.getElementById('setName').value = currentUser.name;
+                    document.getElementById('setEmail').value = currentUser.email || '';
+                    document.getElementById('setPhone').value = currentUser.phone || '';
+                    document.getElementById('setRole').value = currentUser.role || 'admin';
+                }
+
+                // Handle profile save
+                const saveBtn = document.getElementById('btnSaveProfile');
+                if(saveBtn){
+                    saveBtn.addEventListener('click', function(){
+                        const name = document.getElementById('setName').value.trim();
+                        const email = document.getElementById('setEmail').value.trim();
+                        const phone = document.getElementById('setPhone').value.trim();
+                        const role = document.getElementById('setRole').value;
+
+                        if(!name){
+                            alert('Please enter your full name');
+                            return;
+                        }
+
+                        // Update current user data
+                        const updatedUser = {
+                            ...currentUser,
+                            name: name,
+                            email: email,
+                            phone: phone,
+                            role: role
+                        };
+
+                        // Update in localStorage
+                        localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+
+                        // Update users array
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        const userIndex = users.findIndex(u => u.email === currentUser.email);
+                        if(userIndex !== -1){
+                            users[userIndex] = {
+                                ...users[userIndex],
+                                name: name,
+                                phone: phone,
+                                role: role
+                            };
+                            localStorage.setItem('users', JSON.stringify(users));
+                        }
+
+                        alert('Profile updated successfully!');
+                    });
+                }
+
+                // Handle notification toggles
+                const notifyEmail = document.getElementById('notifyEmail');
+                const notifyAttendance = document.getElementById('notifyAttendance');
+                const notifyGrades = document.getElementById('notifyGrades');
+                const notifyAssignments = document.getElementById('notifyAssignments');
+
+                // Load saved notification preferences
+                const notificationPrefs = JSON.parse(localStorage.getItem('notificationPrefs') || '{}');
+                if(notifyEmail) notifyEmail.checked = notificationPrefs.email !== false;
+                if(notifyAttendance) notifyAttendance.checked = notificationPrefs.attendance !== false;
+                if(notifyGrades) notifyGrades.checked = notificationPrefs.grades === true;
+                if(notifyAssignments) notifyAssignments.checked = notificationPrefs.assignments !== false;
+
+                // Save notification preferences
+                function saveNotificationPrefs(){
+                    const prefs = {
+                        email: notifyEmail ? notifyEmail.checked : true,
+                        attendance: notifyAttendance ? notifyAttendance.checked : true,
+                        grades: notifyGrades ? notifyGrades.checked : false,
+                        assignments: notifyAssignments ? notifyAssignments.checked : true
+                    };
+                    localStorage.setItem('notificationPrefs', JSON.stringify(prefs));
+                }
+
+                if(notifyEmail) notifyEmail.addEventListener('change', saveNotificationPrefs);
+                if(notifyAttendance) notifyAttendance.addEventListener('change', saveNotificationPrefs);
+                if(notifyGrades) notifyGrades.addEventListener('change', saveNotificationPrefs);
+                if(notifyAssignments) notifyAssignments.addEventListener('change', saveNotificationPrefs);
+            })();
+
+            // Export and Delete functions
+            window.exportData = function(){
+                try {
+                    const allData = {
+                        students: JSON.parse(localStorage.getItem('students') || '[]'),
+                        classes: JSON.parse(localStorage.getItem('classes') || '[]'),
+                        assignments: JSON.parse(localStorage.getItem('assignments') || '[]'),
+                        exams: JSON.parse(localStorage.getItem('exams') || '[]'),
+                        users: JSON.parse(localStorage.getItem('users') || '[]'),
+                        attendance: {},
+                        exportDate: new Date().toISOString(),
+                        exportedBy: JSON.parse(localStorage.getItem('currentUser') || '{}').name || 'Unknown'
+                    };
+                    
+                    // Get all attendance records
+                    for(let i = 0; i < localStorage.length; i++){
+                        const key = localStorage.key(i);
+                        if(key && key.startsWith('attendance_')){
+                            allData.attendance[key] = JSON.parse(localStorage.getItem(key) || '[]');
+                        }
+                    }
+                    
+                    const dataStr = JSON.stringify(allData, null, 2);
+                    const dataBlob = new Blob([dataStr], {type: 'application/json'});
+                    const url = URL.createObjectURL(dataBlob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = 'school_data_export_' + new Date().toISOString().split('T')[0] + '.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                    
+                    alert('Data exported successfully!');
+                } catch(error) {
+                    console.error('Export error:', error);
+                    alert('Error exporting data. Please try again.');
+                }
+            };
+
+            window.deleteAccount = function(){
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                if(!currentUser.email) {
+                    alert('No user logged in.');
+                    return;
+                }
+
+                const confirmMessage = `Are you sure you want to delete your account?\n\nThis will permanently remove:\n- Your profile data\n- All your settings\n- Your login credentials\n\nThis action cannot be undone!\n\nType "DELETE" to confirm:`;
+                const userInput = prompt(confirmMessage);
+                
+                if(userInput === 'DELETE') {
+                    try {
+                        // Remove user from users array
+                        const users = JSON.parse(localStorage.getItem('users') || '[]');
+                        const updatedUsers = users.filter(user => user.email !== currentUser.email);
+                        localStorage.setItem('users', JSON.stringify(updatedUsers));
+                        
+                        // Clear current user session
+                        localStorage.removeItem('currentUser');
+                        
+                        // Clear notification preferences
+                        localStorage.removeItem('notificationPrefs');
+                        
+                        alert('Account deleted successfully. You will be redirected to the login page.');
+                        location.href = 'login.html';
+                    } catch(error) {
+                        console.error('Delete error:', error);
+                        alert('Error deleting account. Please try again.');
+                    }
+                } else if(userInput !== null) {
+                    alert('Account deletion cancelled. You must type "DELETE" exactly to confirm.');
+                }
+            };
+        </script>
+    </body>
+</html>
